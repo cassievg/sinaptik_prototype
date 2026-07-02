@@ -1,0 +1,205 @@
+{
+  "currentUser": {
+    "id": "m1",
+    "name": "Puja Pramudya",
+    "role": "MENTOR",
+    "avatar": "https://i.pravatar.cc/150?u=puja"
+  },
+  "cohort": {
+    "id": "c7",
+    "name": "Data Analytics Bootcamp — Batch 7 (2026)",
+    "programId": "bootcamp-da",
+    "startDate": "2026-03-10",
+    "totalModules": 6,
+    "totalLearners": 186,
+    "completionRate": 61.4,
+    "avgScore": 74,
+    "atRiskCount": 24,
+    "pendingReviewCount": 31,
+    "avgResponseTimeHours": 3.8,
+    "activeThisWeek": 162
+  },
+  "dashboardAnalytics": {
+    "weeklyEngagement": [
+      { "day": "Mon", "submissions": 28, "logins": 54 },
+      { "day": "Tue", "submissions": 35, "logins": 61 },
+      { "day": "Wed", "submissions": 22, "logins": 48 },
+      { "day": "Thu", "submissions": 31, "logins": 58 },
+      { "day": "Fri", "submissions": 42, "logins": 67 },
+      { "day": "Sat", "submissions": 14, "logins": 29 },
+      { "day": "Sun", "submissions": 8, "logins": 18 }
+    ],
+    "scoreDistribution": [
+      { "range": "0-49", "count": 38, "label": "Needs work" },
+      { "range": "50-69", "count": 72, "label": "Fair" },
+      { "range": "70-84", "count": 89, "label": "Good" },
+      { "range": "85-100", "count": 56, "label": "Excellent" }
+    ],
+    "moduleCompletion": [
+      { "module": "M1: Python for Data", "completed": 186, "total": 186 },
+      { "module": "M2: SQL & Databases", "completed": 168, "total": 186 },
+      { "module": "M3: Pandas & EDA", "completed": 142, "total": 186 },
+      { "module": "M4: Data Cleaning & Wrangling", "completed": 98, "total": 186 },
+      { "module": "M5: Data Visualization", "completed": 54, "total": 186 },
+      { "module": "M6: Machine Learning Basics", "completed": 21, "total": 186 }
+    ],
+    "skillAverages": [
+      { "skill": "Python & Pandas", "avg": 78 },
+      { "skill": "SQL", "avg": 71 },
+      { "skill": "Data Wrangling", "avg": 63 },
+      { "skill": "Data Visualization", "avg": 58 },
+      { "skill": "Machine Learning", "avg": 44 },
+      { "skill": "Leadership", "avg": 52 },
+      { "skill": "Software Engineering", "avg": 61 },
+      { "skill": "Product Management", "avg": 55 },
+      { "skill": "Artificial Intelligence", "avg": 48 },
+      { "skill": "Digital Marketing", "avg": 51 },
+      { "skill": "Finance & BI", "avg": 57 },
+      { "skill": "UI/UX Design", "avg": 49 }
+    ]
+  },
+  "submissions": [
+    {
+      "id": "sub1",
+      "learnerId": "l1",
+      "moduleTitle": "Module 4: Data Cleaning & Wrangling",
+      "content": "import pandas as pd\n\ndata = pd.read_csv('sales.csv')\n# Dropping all null rows\ndata.dropna(inplace=True)\n\nprint(data.describe())",
+      "aiScore": 45,
+      "aiFeedback": "Warning: Using dropna() removed 40% of the data. For this financial dataset, consider imputation (e.g. median) to preserve data integrity.",
+      "submittedAt": "2026-07-02T10:18:00Z"
+    },
+    {
+      "id": "sub2",
+      "learnerId": "l31",
+      "moduleTitle": "Module 5: Data Visualization",
+      "content": "import matplotlib.pyplot as plt\n\ndef plot_sales(df):\n    plt.bar(df['region'], df['revenue'])\n    plt.show()",
+      "aiScore": 63,
+      "aiFeedback": "Chart renders but lacks axis labels, title, and color accessibility. Add plt.xlabel, plt.ylabel, and plt.title.",
+      "submittedAt": "2026-07-02T08:05:00Z"
+    },
+    {
+      "id": "sub3",
+      "learnerId": "l58",
+      "moduleTitle": "Module 4: Data Cleaning & Wrangling",
+      "content": "import pandas as pd\ndata = pd.read_csv('sales.csv')\nprint(data.head())",
+      "aiScore": 28,
+      "aiFeedback": "Submission incomplete — missing values were not handled. Only loaded and previewed the dataset.",
+      "submittedAt": "2026-06-30T11:25:00Z"
+    }
+  ],
+  "activityLogs": [
+    {
+      "id": "log1",
+      "learnerId": "l1",
+      "type": "AI_ALERT",
+      "message": "AI Alert: Sari Dewi shows irregular engagement patterns. Predicted drop-off risk: High.",
+      "timestamp": "2026-07-02T10:16:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log2",
+      "learnerId": "l1",
+      "type": "MENTOR_REQUEST",
+      "message": "Sari Dewi requested mentor review for Module 4.",
+      "timestamp": "2026-07-02T10:20:00Z",
+      "requiresAction": true
+    },
+    {
+      "id": "log3",
+      "learnerId": "l44",
+      "type": "AI_ALERT",
+      "message": "AI Alert: Learner has not logged in for 4 days. Drop-off risk elevated.",
+      "timestamp": "2026-07-02T08:00:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log4",
+      "learnerId": "l58",
+      "type": "SUBMISSION",
+      "message": "Module 4 submission scored 28/100 — mentor intervention needed.",
+      "timestamp": "2026-06-30T11:25:00Z",
+      "requiresAction": true
+    },
+    {
+      "id": "log5",
+      "learnerId": "l31",
+      "type": "MENTOR_REQUEST",
+      "message": "Learner requested review: \"I don't understand how to add proper chart labels.\"",
+      "timestamp": "2026-07-02T08:10:00Z",
+      "requiresAction": true
+    },
+    {
+      "id": "log6",
+      "learnerId": "l12",
+      "type": "SUBMISSION",
+      "message": "Module 6 completed with score 94/100.",
+      "timestamp": "2026-07-02T09:40:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log7",
+      "learnerId": "l77",
+      "type": "SUBMISSION",
+      "message": "Module 5 completed with score 82/100.",
+      "timestamp": "2026-07-01T16:15:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log8",
+      "learnerId": "l103",
+      "type": "SUBMISSION",
+      "message": "Module 4 completed with score 88/100.",
+      "timestamp": "2026-07-02T07:50:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log9",
+      "learnerId": "l58",
+      "type": "AI_ALERT",
+      "message": "AI Alert: Learner failed 2 consecutive modules. Status changed to STUCK.",
+      "timestamp": "2026-07-01T09:00:00Z",
+      "requiresAction": false
+    },
+    {
+      "id": "log10",
+      "learnerId": "l145",
+      "type": "SYSTEM",
+      "message": "Learner completed the full Data Analytics Bootcamp. Certificate issued.",
+      "timestamp": "2026-06-25T12:00:00Z",
+      "requiresAction": false
+    }
+  ],
+  "learnerSession": {
+    "currentUser": {
+      "id": "l1",
+      "name": "Sari Dewi",
+      "role": "LEARNER",
+      "avatar": "https://i.pravatar.cc/150?u=l1"
+    },
+    "programId": "bootcamp-da",
+    "modules": [
+      { "id": "mod1", "title": "Module 1: Python for Data", "status": "COMPLETED", "score": 78 },
+      { "id": "mod2", "title": "Module 2: SQL & Databases", "status": "COMPLETED", "score": 82 },
+      { "id": "mod3", "title": "Module 3: Pandas & EDA", "status": "COMPLETED", "score": 71 },
+      { "id": "mod4", "title": "Module 4: Data Cleaning & Wrangling", "status": "IN_PROGRESS", "score": null },
+      { "id": "mod5", "title": "Module 5: Data Visualization", "status": "LOCKED", "score": null },
+      { "id": "mod6", "title": "Module 6: Machine Learning Basics", "status": "LOCKED", "score": null }
+    ],
+    "assignment": {
+      "title": "Module 4: Data Cleaning & Wrangling",
+      "prompt": "Clean the provided sales dataset. Handle all missing values appropriately.",
+      "submittedContent": "import pandas as pd\n\ndata = pd.read_csv('sales.csv')\ndata.dropna(inplace=True)\nprint(data.describe())"
+    },
+    "aiEvaluation": {
+      "status": "GRADED",
+      "score": 45,
+      "feedbackSummary": "Data loss warning.",
+      "detailedFeedback": "You used `dropna()` which removed 40% of the dataset. For this financial dataset, consider imputation (e.g. filling missing values with the median) to preserve data integrity."
+    },
+    "assignedMentor": {
+      "id": "m1",
+      "name": "Puja Pramudya",
+      "avatar": "https://i.pravatar.cc/150?u=puja"
+    }
+  }
+}
