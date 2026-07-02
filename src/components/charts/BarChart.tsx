@@ -22,8 +22,10 @@ export function VerticalBarChart({
 
   return (
     <div className="card border-stone-300 p-5">
-      <h3 className="section-title">{title}</h3>
-      {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      <div className="section-heading">
+        <h3 className="section-title">{title}</h3>
+        {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      </div>
 
       <svg
         viewBox={`0 0 ${Math.max(data.length * (barWidth + barGap) + barGap, 280)} ${chartH + 40}`}
@@ -102,8 +104,10 @@ export function GroupedBarChart({ title, subtitle, data }: GroupedBarChartProps)
 
   return (
     <div className="card border-stone-300 p-5">
-      <h3 className="section-title">{title}</h3>
-      {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      <div className="section-heading">
+        <h3 className="section-title">{title}</h3>
+        {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      </div>
 
       <svg
         viewBox={`0 0 ${data.length * (groupW + gap) + gap} ${chartH + 50}`}
@@ -183,34 +187,74 @@ export function HorizontalBarChart({
   asPercent = false,
 }: HorizontalBarChartProps) {
   const max = maxValue ?? Math.max(...data.map((d) => d.value), 1)
-  const barH = 18
-  const rowGap = 10
+  const barH = 10
+  const rowGap = 20
+  const trackX = 120
+  const trackW = 250
+  const chartW = 400
 
   return (
     <div className="card border-stone-300 p-5">
-      <h3 className="section-title">{title}</h3>
-      {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      <div className="section-heading">
+        <h3 className="section-title">{title}</h3>
+        {subtitle && <p className="mt-1 text-xs text-stone-500">{subtitle}</p>}
+      </div>
 
       <svg
-        viewBox={`0 0 400 ${data.length * (barH + rowGap) + 8}`}
+        viewBox={`0 0 ${chartW} ${data.length * (barH + rowGap) + 8}`}
         className="mt-4 w-full"
         role="img"
         aria-label={title}
       >
         {data.map((d, i) => {
           const y = i * (barH + rowGap)
-          const w = max > 0 ? (d.value / max) * 260 : 0
+          const w = max > 0 ? (d.value / max) * trackW : 0
           const display = d.display ?? (asPercent ? `${d.value}%` : String(d.value))
+          // rough width estimate to decide if label fits inside the filled bar
+          const estimatedLabelW = display.length * 6 + 12
+          const labelFitsInside = w >= estimatedLabelW + 10
+
           return (
             <g key={d.label}>
-              <text x={0} y={y + 13} className="fill-stone-600 text-[10px]">
+              <text x={0} y={y + barH - 1} className="fill-stone-600 text-[10px]">
                 {d.label.length > 18 ? `${d.label.slice(0, 16)}…` : d.label}
               </text>
-              <rect x={120} y={y} width={260} height={barH} fill="#e7e5e4" />
-              <rect x={120} y={y} width={w} height={barH} fill={CHART_COLORS[0]} />
-              <text x={388} y={y + 13} textAnchor="end" className="fill-stone-800 text-[10px]">
-                {display}
-              </text>
+
+              {/* track */}
+              <rect x={trackX} y={y} width={trackW} height={barH} rx={barH / 2} fill="#efedec" />
+
+              {/* filled portion */}
+              {w > 0 && (
+                <rect
+                  x={trackX}
+                  y={y}
+                  width={Math.max(w, barH)}
+                  height={barH}
+                  rx={barH / 2}
+                  fill="#1e3a5f"
+                />
+              )}
+
+              {/* value label: inside (white) if it fits, else just outside (dark) */}
+              {labelFitsInside ? (
+                <text
+                  x={trackX + w - 8}
+                  y={y + barH - 2}
+                  textAnchor="end"
+                  className="fill-white text-[9px] font-medium"
+                >
+                  {display}
+                </text>
+              ) : (
+                <text
+                  x={trackX + w + 8}
+                  y={y + barH - 2}
+                  textAnchor="start"
+                  className="fill-stone-700 text-[9px] font-medium"
+                >
+                  {display}
+                </text>
+              )}
             </g>
           )
         })}
@@ -229,11 +273,13 @@ export function StatusBarChart({ title, data }: StatusBarChartProps) {
 
   return (
     <div className="card border-stone-300 p-5">
-      <h3 className="section-title">{title}</h3>
-      <p className="mt-1 text-xs text-stone-500">{total} learners total</p>
+      <div className="section-heading">
+        <h3 className="section-title">{title}</h3>
+        <p className="mt-1 text-xs text-stone-500">{total} learners total</p>
+      </div>
 
       {/* stacked bar */}
-      <div className="mt-6 flex h-8 w-full overflow-hidden border border-stone-300">
+      <div className="mt-4 flex h-8 w-full overflow-hidden rounded-md border border-stone-300">
         {data.map((d, i) =>
           d.count > 0 ? (
             <div

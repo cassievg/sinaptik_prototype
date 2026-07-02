@@ -37,6 +37,7 @@ export interface Learner {
   engagementScore: number
   dropOffRisk: DropOffRisk
   skills: SkillProgress[]
+  moduleHistory: LearnerModule[]
 }
 
 export interface ActivityLog {

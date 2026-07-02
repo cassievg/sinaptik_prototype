@@ -1,6 +1,8 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import StatusBadge from '../components/StatusBadge'
+import LearnerInsightChart from '../components/charts/LearnerInsightChart'
+import ModuleHistoryChart from '../components/charts/ModuleHistoryChart'
 import {
   formatTimestamp,
   getActivityLabel,
@@ -18,6 +20,13 @@ export default function LearnerProfilePage() {
     .filter((log) => log.learnerId === learnerId)
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   const submission = learnerId ? getSubmission(learnerId) : undefined
+
+  const cohortAvgScore = Math.round(
+    data.learners.reduce((sum, l) => sum + l.avgScore, 0) / data.learners.length
+  )
+  const cohortAvgEngagement = Math.round(
+    data.learners.reduce((sum, l) => sum + l.engagementScore, 0) / data.learners.length
+  )
 
   if (!learner) {
     return <p className="text-stone-500">Learner not found.</p>
@@ -41,24 +50,43 @@ export default function LearnerProfilePage() {
         </span>
       </div>
 
-      <div className="mt-6 grid gap-4 border border-stone-300 sm:grid-cols-3">
+      <div className="mt-6 grid gap-4 rounded-lg border border-stone-300 sm:grid-cols-3">
         <div className="p-4 text-center">
           <p className="font-serif text-2xl">{learner.avgScore}</p>
           <p className="text-xs text-stone-600">Average score</p>
         </div>
-        <div className="border-l border-stone-300 p-4 text-center">
+        <div className="border-t border-stone-300 p-4 text-center sm:border-l sm:border-t-0">
           <p className="font-serif text-2xl">{learner.engagementScore}</p>
           <p className="text-xs text-stone-600">Engagement</p>
         </div>
-        <div className="border-l border-stone-300 p-4 text-center">
+        <div className="border-t border-stone-300 p-4 text-center sm:border-l sm:border-t-0">
           <p className="font-serif text-2xl">{progressPct}%</p>
           <p className="text-xs text-stone-600">Progress</p>
         </div>
       </div>
 
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <section className="card border-stone-300 p-6">
+          <div className="section-heading">
+            <h2 className="section-title">Learning snapshot</h2>
+          </div>
+          <div className="mt-4">
+            <LearnerInsightChart
+              learner={learner}
+              cohortAvgScore={cohortAvgScore}
+              cohortAvgEngagement={cohortAvgEngagement}
+            />
+          </div>
+        </section>
+
+        <ModuleHistoryChart learner={learner} />
+      </div>
+
       <div className="mt-8 grid gap-8 lg:grid-cols-3">
         <section className="card border-stone-300 p-6 lg:col-span-1">
-          <h2 className="section-title">Skill breakdown</h2>
+          <div className="section-heading">
+            <h2 className="section-title">Skill breakdown</h2>
+          </div>
           <div className="mt-4 space-y-4">
             {learner.skills.map((skill) => (
               <div key={skill.name}>
@@ -89,7 +117,9 @@ export default function LearnerProfilePage() {
         </section>
 
         <section className="card border-stone-300 p-6 lg:col-span-2">
-          <h2 className="section-title">Activity timeline</h2>
+          <div className="section-heading">
+            <h2 className="section-title">Activity timeline</h2>
+          </div>
           <div className="mt-6 space-y-4">
             {logs.length === 0 ? (
               <p className="text-sm text-stone-400">No activity yet.</p>

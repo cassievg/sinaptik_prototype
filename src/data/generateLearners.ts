@@ -1,4 +1,4 @@
-import type { Learner, LearnerStatus } from '../types'
+import type { Learner, LearnerStatus, LearnerModule } from '../types'
 import { bootcampModules, mentors } from './sinaptikCatalog'
 
 const FIRST_NAMES = [
@@ -33,6 +33,25 @@ function pick<T>(arr: T[], rand: () => number): T {
   return arr[Math.floor(rand() * arr.length)]
 }
 
+function buildModuleHistory(
+  moduleProgress: number,
+  avgScore: number,
+  rand: () => number
+): LearnerModule[] {
+  return bootcampModules.map((mod, i) => {
+    if (i < moduleProgress) {
+      // completed — score wobbles around the learner's average
+      const variance = Math.round((rand() - 0.5) * 20)
+      const score = Math.min(100, Math.max(35, avgScore + variance))
+      return { id: mod.id, title: mod.title, status: 'COMPLETED', score }
+    }
+    if (i === moduleProgress && moduleProgress < bootcampModules.length) {
+      return { id: mod.id, title: mod.title, status: 'IN_PROGRESS', score: null }
+    }
+    return { id: mod.id, title: mod.title, status: 'LOCKED', score: null }
+  })
+}
+
 export function generateLearners(count = 186): Learner[] {
   const rand = seededRandom(42)
   const learners: Learner[] = []
@@ -53,6 +72,8 @@ export function generateLearners(count = 186): Learner[] {
 
     const daysAgo = Math.floor(rand() * 14)
     const lastActive = new Date(Date.now() - daysAgo * 86400000).toISOString()
+    const avgScore = Math.round(40 + rand() * 55)
+    const clampedProgress = Math.min(moduleProgress, 6)
 
     learners.push({
       id,
@@ -60,10 +81,10 @@ export function generateLearners(count = 186): Learner[] {
       avatar: `https://i.pravatar.cc/150?u=${id}`,
       status,
       currentModule,
-      moduleProgress: Math.min(moduleProgress, 6),
+      moduleProgress: clampedProgress,
       totalModules: 6,
       lastActive,
-      avgScore: Math.round(40 + rand() * 55),
+      avgScore,
       engagementScore: Math.round(30 + rand() * 65),
       dropOffRisk: pick([...RISKS], rand),
       assignedMentor: {
@@ -78,6 +99,7 @@ export function generateLearners(count = 186): Learner[] {
         { name: 'Leadership', progress: Math.round(15 + rand() * 70) },
         { name: 'Software Engineering', progress: Math.round(10 + rand() * 65) },
       ],
+      moduleHistory: buildModuleHistory(clampedProgress, avgScore, rand),
     })
   }
 
@@ -102,6 +124,14 @@ export function generateLearners(count = 186): Learner[] {
       { name: 'Data Wrangling', progress: 45 },
       { name: 'Data Visualization', progress: 38 },
       { name: 'Machine Learning', progress: 32 },
+    ],
+    moduleHistory: [
+      { id: bootcampModules[0].id, title: bootcampModules[0].title, status: 'COMPLETED', score: 78 },
+      { id: bootcampModules[1].id, title: bootcampModules[1].title, status: 'COMPLETED', score: 61 },
+      { id: bootcampModules[2].id, title: bootcampModules[2].title, status: 'COMPLETED', score: 55 },
+      { id: bootcampModules[3].id, title: bootcampModules[3].title, status: 'IN_PROGRESS', score: null },
+      { id: bootcampModules[4].id, title: bootcampModules[4].title, status: 'LOCKED', score: null },
+      { id: bootcampModules[5].id, title: bootcampModules[5].title, status: 'LOCKED', score: null },
     ],
   }
 

@@ -81,18 +81,6 @@ export default function MentorDashboardPage() {
             submissions: d.submissions,
           }))}
         />
-        <VerticalBarChart
-          title="Score distribution"
-          subtitle="Number of AI-graded submissions per range"
-          data={dashboardAnalytics.scoreDistribution.map((d) => ({
-            label: d.range,
-            value: d.count,
-            sublabel: d.label,
-          }))}
-        />
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <HorizontalBarChart
           title="Module completion"
           subtitle="Learners who completed each module"
@@ -102,6 +90,18 @@ export default function MentorDashboardPage() {
             display: `${d.completed}/${d.total}`,
           }))}
           maxValue={cohort.totalLearners}
+        />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <VerticalBarChart
+          title="Score distribution"
+          subtitle="Number of AI-graded submissions per range"
+          data={dashboardAnalytics.scoreDistribution.map((d) => ({
+            label: d.range,
+            value: d.count,
+            sublabel: d.label,
+          }))}
         />
         <HorizontalBarChart
           title="Cohort skill averages"
@@ -119,26 +119,48 @@ export default function MentorDashboardPage() {
         <StatusBarChart title="Status breakdown" data={statusChartData} />
 
         <div className="card border-stone-300 p-5 lg:col-span-2">
-          <h3 className="section-title">Recent alerts and actions</h3>
+          <div className="section-heading">
+            <h3 className="section-title">Recent alerts and actions</h3>
+          </div>
           <div className="mt-4 space-y-2">
             {recentAlerts.map((alert) => {
               const learner = learners.find((l) => l.id === alert.learnerId)
+              const needsAction = alert.requiresAction
               return (
                 <div
                   key={alert.id}
-                  className="flex items-start gap-3 border border-stone-200 px-3 py-2"
+                  className={`relative flex items-start gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                    needsAction
+                      ? 'border-amber-300 bg-amber-50/70 shadow-sm'
+                      : 'border-stone-200 bg-white'
+                  }`}
                 >
-                  <span className="text-xs font-medium uppercase text-stone-500">
+                  {needsAction && (
+                    <span
+                      className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-amber-500"
+                      aria-hidden
+                    />
+                  )}
+                  <span
+                    className={`ml-1 shrink-0 text-xs font-medium uppercase ${
+                      needsAction ? 'text-amber-800' : 'text-stone-500'
+                    }`}
+                  >
                     {getActivityLabel(alert.type)}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-stone-800">{alert.message}</p>
+                    <p className={`text-sm ${needsAction ? 'font-medium text-stone-900' : 'text-stone-800'}`}>
+                      {alert.message}
+                    </p>
                     <p className="text-xs text-stone-500">
                       {learner?.name} · {formatRelativeTime(alert.timestamp)}
                     </p>
                   </div>
-                  {alert.requiresAction && (
-                    <span className="shrink-0 text-xs text-stone-600">Action needed</span>
+                  {needsAction && (
+                    <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-amber-400 bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900">
+                      <span className="inline-block h-2 w-2 rounded-full bg-amber-600" />
+                      Action needed
+                    </span>
                   )}
                 </div>
               )
@@ -148,14 +170,16 @@ export default function MentorDashboardPage() {
       </div>
 
       <section className="mt-10">
-        <h3 className="section-title">Learner progress board</h3>
-        <p className="mt-1 text-sm text-stone-600">
+        <div className="section-heading">
+          <h3 className="section-title">Learner progress board</h3>
+        </div>
+        <p className="mt-3 text-sm text-stone-600">
           {myLearners.length} learners under {currentUser.name} · {cohort.totalLearners} total in
           cohort
         </p>
         <div className="mt-4 grid gap-6 md:grid-cols-3">
           {columnConfig.map((col) => (
-            <div key={col.key} className="border border-stone-300 p-4">
+            <div key={col.key} className="rounded-lg border border-stone-300 bg-white p-4">
               <div className="mb-4 flex items-center justify-between border-b border-stone-200 pb-2">
                 <h4 className="text-sm font-medium text-stone-900">{col.title}</h4>
                 <span className="text-xs text-stone-500">{grouped[col.key].length}</span>

@@ -197,7 +197,9 @@ export default function FeedbackViewPage() {
 
         <div className="space-y-6">
           <section className="card border-stone-300 p-6">
-            <h2 className="section-title">AI insights</h2>
+            <div className="section-heading">
+              <h2 className="section-title">AI insights</h2>
+            </div>
             <p className="mt-4 font-serif text-3xl font-semibold text-stone-900">
               {submission.aiScore}
               <span className="text-lg font-normal text-stone-500"> / 100</span>
