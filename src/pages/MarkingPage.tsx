@@ -21,28 +21,32 @@ export default function MarkingPage() {
   const mentors = useMemo(() => {
     const map = new Map<string, { id: string; name: string; avatar: string }>()
     map.set(data.currentUser.id, data.currentUser)
-    data.learners.forEach((l) => {
-      map.set(l.assignedMentor.id, {
-        id: l.assignedMentor.id,
-        name: l.assignedMentor.name,
-        avatar: l.assignedMentor.avatar,
+    if (learner) {
+      map.set(learner.assignedMentor.id, {
+        id: learner.assignedMentor.id,
+        name: learner.assignedMentor.name,
+        avatar: learner.assignedMentor.avatar,
       })
-    })
+    }
     return Array.from(map.values())
-  }, [data.currentUser, data.learners])
+  }, [data.currentUser, learner])
 
   const mentionables = useMemo(
-    () => buildMentionables(data.learners, mentors),
-    [data.learners, mentors]
+    () => (learner ? buildMentionables([learner], mentors) : buildMentionables([], mentors)),
+    [learner, mentors]
   )
 
   const [comments, setComments] = useState<CommentEntry[]>([])
+  const [mentorScore, setMentorScore] = useState('')
   const [selection, setSelection] = useState<{
     text: string
     top: number
     left: number
   } | null>(null)
-  const [resolved, setResolved] = useState(false)
+
+  const scoreValue = mentorScore.trim() === '' ? null : Number(mentorScore)
+  const canMark =
+    scoreValue !== null && !Number.isNaN(scoreValue) && scoreValue >= 0 && scoreValue <= 100
 
   const addComment = (
     text: string,
@@ -85,12 +89,10 @@ export default function MarkingPage() {
     })
   }, [])
 
-  const handleResolve = () => {
-    if (learner) {
-      resolveSubmission(learner.id)
-      setResolved(true)
-      setTimeout(() => navigate('/mentor/tasks'), 1500)
-    }
+  const handleMark = () => {
+    if (!learner || !canMark) return
+    resolveSubmission(learner.id)
+    navigate('/mentor/tasks')
   }
 
   if (!submission || !learner) {
@@ -107,18 +109,7 @@ export default function MarkingPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <BackButton to={`/mentor/learner/${learner.id}`} label={`Back to ${learner.name}`} />
-        <button onClick={handleResolve} disabled={resolved} className="btn-primary">
-          {resolved ? 'Resolved' : 'Mark as resolved'}
-        </button>
-      </div>
-
-      {resolved && (
-        <div className="mt-4 border border-stone-400 bg-stone-50 px-4 py-3 text-sm text-stone-800">
-          Submission resolved. Redirecting...
-        </div>
-      )}
+      <BackButton to={`/mentor/learner/${learner.id}`} label={`Back to ${learner.name}`} />
 
       <h1 className="page-title mt-4">Marking</h1>
       <p className="page-subtitle">
@@ -146,7 +137,7 @@ export default function MarkingPage() {
               {inlineComments.map((c) => (
                 <div
                   key={c.id}
-                  className="absolute z-10 max-w-xs border border-stone-400 bg-white p-3"
+                  className="absolute z-10 max-w-xs border border-stone-400 bg-white p-3 shadow-sm"
                   style={{ top: c.offsetTop, left: 16 }}
                 >
                   <p className="mb-1 text-xs text-stone-500">
@@ -192,13 +183,24 @@ export default function MarkingPage() {
         <div className="space-y-6">
           <section className="card border-stone-300 p-6">
             <div className="section-heading">
-              <h2 className="section-title">AI insights</h2>
+              <h2 className="section-title">Mentor score</h2>
             </div>
-            <p className="mt-4 font-serif text-3xl font-semibold text-stone-900">
-              {submission.aiScore}
-              <span className="text-lg font-normal text-stone-500"> / 100</span>
+            <p className="mt-2 text-xs text-stone-500">
+              Grade this submission manually. AI is used elsewhere for cohort analytics and
+              at-risk alerts only.
             </p>
-            <p className="mt-4 text-sm leading-relaxed text-stone-600">{submission.aiFeedback}</p>
+            <div className="mt-4 flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={mentorScore}
+                onChange={(e) => setMentorScore(e.target.value)}
+                placeholder="—"
+                className="w-24 rounded-md border border-stone-300 px-3 py-2 text-center font-serif text-xl focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              />
+              <span className="text-sm text-stone-500">/ 100</span>
+            </div>
           </section>
 
           <section className="card border-stone-300 p-6">
@@ -220,6 +222,17 @@ export default function MarkingPage() {
             )}
           </section>
         </div>
+      </div>
+
+      <div className="mt-8 flex justify-end border-t border-stone-200 pt-6">
+        <button
+          type="button"
+          onClick={handleMark}
+          disabled={!canMark}
+          className="btn-primary min-w-[120px]"
+        >
+          Mark
+        </button>
       </div>
     </div>
   )

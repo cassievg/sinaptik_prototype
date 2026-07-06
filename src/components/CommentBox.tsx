@@ -43,7 +43,8 @@ function extractMentions(text: string, mentionables: MentionableUser[]): Mention
 }
 
 function filterMentionables(query: string, mentionables: MentionableUser[]): MentionableUser[] {
-  const q = query.toLowerCase()
+  const q = query.trim().toLowerCase()
+  if (!q) return mentionables
   return mentionables.filter((u) => u.name.toLowerCase().includes(q))
 }
 
@@ -57,6 +58,66 @@ export function renderCommentText(text: string) {
     ) : (
       <span key={i}>{part}</span>
     )
+  )
+}
+
+function MentionDropdown({
+  users,
+  onSelect,
+}: {
+  users: MentionableUser[]
+  onSelect: (user: MentionableUser) => void
+}) {
+  const students = users.filter((u) => u.role === 'LEARNER')
+  const mentors = users.filter((u) => u.role === 'MENTOR')
+
+  if (users.length === 0) {
+    return <p className="px-3 py-2 text-xs text-stone-500">No matches</p>
+  }
+
+  return (
+    <>
+      {students.length > 0 && (
+        <div>
+          <p className="border-b border-stone-100 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-500">
+            Students
+          </p>
+          {students.map((user) => (
+            <MentionOption key={user.id} user={user} onSelect={onSelect} />
+          ))}
+        </div>
+      )}
+      {mentors.length > 0 && (
+        <div>
+          <p className="border-b border-t border-stone-100 bg-stone-50 px-3 py-1.5 text-xs font-medium text-stone-500">
+            Mentors
+          </p>
+          {mentors.map((user) => (
+            <MentionOption key={user.id} user={user} onSelect={onSelect} />
+          ))}
+        </div>
+      )}
+    </>
+  )
+}
+
+function MentionOption({
+  user,
+  onSelect,
+}: {
+  user: MentionableUser
+  onSelect: (user: MentionableUser) => void
+}) {
+  return (
+    <button
+      type="button"
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={() => onSelect(user)}
+      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-stone-50"
+    >
+      <img src={user.avatar} alt="" className="h-6 w-6 rounded-full border border-stone-200" />
+      <span className="text-stone-900">{user.name}</span>
+    </button>
   )
 }
 
@@ -120,47 +181,22 @@ export default function CommentBox({
           value={text}
           onChange={(e) => handleChange(e.target.value)}
           onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowPicker(false)
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit()
+          }}
+          onBlur={() => {
+            window.setTimeout(() => setShowPicker(false), 150)
           }}
           placeholder={placeholder}
           rows={compact ? 2 : 3}
           className="w-full resize-none border border-stone-300 bg-white p-3 text-sm focus:border-accent focus:outline-none"
         />
 
-        {showPicker && filtered.length > 0 && (
-          <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-48 overflow-y-auto border border-stone-300 bg-white">
-            <p className="border-b border-stone-200 px-3 py-1.5 text-xs text-stone-500">
-              Tag someone
-            </p>
-            {filtered.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                onClick={() => insertMention(user)}
-                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-stone-50"
-              >
-                <span className="text-stone-900">{user.name}</span>
-                <span className="ml-auto text-xs text-stone-500">
-                  {user.role === 'MENTOR' ? 'Mentor' : 'Learner'}
-                </span>
-              </button>
-            ))}
+        {showPicker && (
+          <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-52 overflow-y-auto rounded-md border border-stone-300 bg-white shadow-lg">
+            <MentionDropdown users={filtered} onSelect={insertMention} />
           </div>
         )}
-      </div>
-
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-        <span className="text-xs text-stone-500">Quick tag:</span>
-        {mentionables.map((user) => (
-          <button
-            key={user.id}
-            type="button"
-            onClick={() => insertMention(user)}
-            className="border border-stone-300 bg-white px-2 py-0.5 text-xs text-stone-700 hover:border-stone-500"
-          >
-            @{user.name.split(' ')[0]}
-          </button>
-        ))}
       </div>
 
       <div className="mt-3 flex gap-2">

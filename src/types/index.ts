@@ -113,6 +113,8 @@ export interface ReviewRequest {
   studentMessage: string
   status: 'OPEN' | 'RESOLVED'
   createdAt: string
+  mentorScore?: number
+  mentorFeedback?: string
 }
 
 export interface ActivityLog {

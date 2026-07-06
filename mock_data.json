@@ -278,7 +278,7 @@
       "id": "rr1",
       "learnerId": "l5",
       "submissionId": "sub7",
-      "studentMessage": "I don't understand why the AI says my EDA is too shallow. I printed head() and info() — isn't that enough for a first pass?",
+      "studentMessage": "I'm not sure my EDA is complete enough. I printed head() and info() — isn't that enough for a first pass?",
       "status": "OPEN",
       "createdAt": "2026-06-30T13:20:00+07:00"
     },
@@ -296,7 +296,9 @@
       "submissionId": "sub9",
       "studentMessage": "Can you explain the difference between loc and iloc? I keep mixing them up on Quiz 3.",
       "status": "RESOLVED",
-      "createdAt": "2026-07-01T08:05:00+07:00"
+      "createdAt": "2026-07-01T08:05:00+07:00",
+      "mentorScore": 72,
+      "mentorFeedback": "loc selects by row/column labels (e.g. df.loc[0, 'name']). iloc selects by integer position (e.g. df.iloc[0, 1]). Quiz 3 mixes both — label the index when you use loc and use numbers only with iloc."
     }
   ],
   "notifications": [
@@ -527,7 +529,7 @@
       "id": "log5",
       "learnerId": "l5",
       "type": "MENTOR_REQUEST",
-      "message": "Yoga Pratama requested review: \"I don't understand why the AI says my EDA is too shallow.\"",
+      "message": "Yoga Pratama requested review: \"I'm not sure my EDA is complete enough.\"",
       "timestamp": "2026-06-30T13:20:00+07:00",
       "requiresAction": true
     },
