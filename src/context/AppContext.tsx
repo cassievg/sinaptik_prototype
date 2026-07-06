@@ -33,6 +33,7 @@ interface AppContextValue {
   conversations: ChatConversation[]
   reviewRequests: ReviewRequest[]
   testResults: Record<string, number>
+  markNotificationRead: (notificationId: string) => void
   saveTestResult: (testId: string, score: number) => void
   getSubmission: (learnerId: string, submissionId?: string) => AppData['submissions'][0] | undefined
   getSubmissionById: (submissionId: string) => AppData['submissions'][0] | undefined
@@ -55,6 +56,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [learnerCompleted, setLearnerCompleted] = useState(false)
   const [escalationReason, setEscalationReason] = useState('')
   const [testResults, setTestResults] = useState<Record<string, number>>({})
+  const [notifications, setNotifications] = useState<Notification[]>(
+    rawData.notifications as Notification[]
+  )
 
   const dashboardAnalytics = useMemo(
     (): DashboardAnalytics => ({
@@ -66,6 +70,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const saveTestResult = useCallback((testId: string, score: number) => {
     setTestResults((prev) => ({ ...prev, [testId]: score }))
+  }, [])
+
+  const markNotificationRead = useCallback((notificationId: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
+    )
   }, [])
 
   const submissions = rawData.submissions as AppData['submissions']
@@ -145,11 +155,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         fields,
         skillTests,
         tasks: rawData.tasks as MentorTask[],
-        notifications: rawData.notifications as Notification[],
+        notifications,
         conversations: rawData.conversations as ChatConversation[],
         reviewRequests: rawData.reviewRequests as ReviewRequest[],
         testResults,
         saveTestResult,
+        markNotificationRead,
         getSubmission,
         getSubmissionById,
         updateLearnerStatus,

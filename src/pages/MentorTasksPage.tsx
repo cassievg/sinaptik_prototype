@@ -8,6 +8,7 @@ import {
   groupTasksByCourseModule,
   getTaskRoute,
 } from '../utils/mockDataHelpers'
+import { TASKS_RETURN } from '../utils/taskNavigation'
 import type { MentorTask } from '../types'
 
 const WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -238,7 +239,11 @@ function TaskRow({ task }: { task: MentorTask }) {
       <span className={`min-w-0 flex-1 ${done ? 'text-stone-500 line-through' : 'text-stone-800'}`}>
         {taskLabel(task)}
       </span>
-      <Link to={getTaskRoute(task)} className="shrink-0 text-accent hover:underline">
+      <Link
+        to={getTaskRoute(task)}
+        state={TASKS_RETURN}
+        className="shrink-0 text-accent hover:underline"
+      >
         View
       </Link>
     </li>

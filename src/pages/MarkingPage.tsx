@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import BackButton from '../components/BackButton'
+import { resolveBackNavigation } from '../utils/taskNavigation'
 import CommentBox, {
   buildMentionables,
   renderCommentText,
@@ -13,6 +14,7 @@ export default function MarkingPage() {
   const { submissionId } = useParams<{ submissionId: string }>()
   const { data, getSubmissionById, resolveSubmission } = useApp()
   const navigate = useNavigate()
+  const location = useLocation()
   const contentRef = useRef<HTMLPreElement>(null)
 
   const submission = submissionId ? getSubmissionById(submissionId) : undefined
@@ -106,10 +108,15 @@ export default function MarkingPage() {
 
   const inlineComments = comments.filter((c) => c.selectedText)
   const generalComments = comments.filter((c) => !c.selectedText)
+  const back = resolveBackNavigation(
+    location.state,
+    `/mentor/learner/${learner.id}`,
+    `Back to ${learner.name}`
+  )
 
   return (
     <div>
-      <BackButton to={`/mentor/learner/${learner.id}`} label={`Back to ${learner.name}`} />
+      <BackButton to={back.to} label={back.label} />
 
       <h1 className="page-title mt-4">Marking</h1>
       <p className="page-subtitle">

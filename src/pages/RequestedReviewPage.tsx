@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import BackButton from '../components/BackButton'
+import { resolveBackNavigation } from '../utils/taskNavigation'
 import CommentBox, {
   buildMentionables,
   renderCommentText,
@@ -13,6 +14,7 @@ export default function RequestedReviewPage() {
   const { requestId } = useParams<{ requestId: string }>()
   const { data, reviewRequests, getSubmissionById, resolveSubmission } = useApp()
   const navigate = useNavigate()
+  const location = useLocation()
   const contentRef = useRef<HTMLPreElement>(null)
 
   const request = reviewRequests.find((r) => r.id === requestId)
@@ -98,10 +100,15 @@ export default function RequestedReviewPage() {
 
   const inlineComments = comments.filter((c) => c.selectedText)
   const generalComments = comments.filter((c) => !c.selectedText)
+  const back = resolveBackNavigation(
+    location.state,
+    `/mentor/learner/${learner.id}`,
+    `Back to ${learner.name}`
+  )
 
   return (
     <div>
-      <BackButton to={`/mentor/learner/${learner.id}`} label={`Back to ${learner.name}`} />
+      <BackButton to={back.to} label={back.label} />
 
       <h1 className="page-title mt-4">Requested review</h1>
       <p className="page-subtitle">

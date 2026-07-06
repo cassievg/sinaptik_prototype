@@ -104,6 +104,14 @@ export function getUnreadNotificationCount(notifications: Notification[]): numbe
   return notifications.filter((n) => !n.read).length
 }
 
+export function sortNotificationsByDate(notifications: Notification[]): Notification[] {
+  return [...notifications].sort((a, b) => b.date.localeCompare(a.date))
+}
+
+export function getRecentNotifications(notifications: Notification[], limit = 5): Notification[] {
+  return sortNotificationsByDate(notifications).slice(0, limit)
+}
+
 export function filterNotificationsByTab(
   notifications: Notification[],
   tab: 'ALL' | 'MENTOR_REQUEST' | 'ASSIGNMENT_SUBMISSION'
