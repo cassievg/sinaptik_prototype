@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext'
 import CollapsibleSection from '../components/CollapsibleSection'
 import {
   getTasksForDate,
-  getCalendarTaskMarkers,
+  getCalendarDayStatus,
   groupTasksByCourseModule,
   getTaskRoute,
 } from '../utils/mockDataHelpers'
@@ -38,7 +38,7 @@ export default function MentorTasksPage() {
   const [viewMonth, setViewMonth] = useState(6)
   const [selectedDate, setSelectedDate] = useState(formatIsoDate(2026, 6, 3))
 
-  const markers = useMemo(() => new Set(getCalendarTaskMarkers(tasks)), [tasks])
+  const dayStatusByDate = useMemo(() => getCalendarDayStatus(tasks), [tasks])
   const dayTasks = useMemo(() => getTasksForDate(tasks, selectedDate), [tasks, selectedDate])
 
   const submissionGroups = useMemo(() => {
@@ -47,8 +47,8 @@ export default function MentorTasksPage() {
   }, [dayTasks])
 
   const reviewTasks = useMemo(
-    () => tasks.filter((t) => t.type === 'REVIEW_REQUEST'),
-    [tasks]
+    () => dayTasks.filter((t) => t.type === 'REVIEW_REQUEST'),
+    [dayTasks]
   )
 
   const uncompletedWeek = tasks.filter((t) => t.status === 'PENDING').length
@@ -109,7 +109,7 @@ export default function MentorTasksPage() {
                 if (day === null) return <span key={`e-${i}`} />
                 const iso = formatIsoDate(viewYear, viewMonth, day)
                 const selected = iso === selectedDate
-                const hasTask = markers.has(iso)
+                const dayStatus = dayStatusByDate.get(iso)
                 return (
                   <button
                     key={iso}
@@ -124,11 +124,18 @@ export default function MentorTasksPage() {
                     }`}
                   >
                     {day}
-                    {hasTask && (
+                    {dayStatus && (
                       <span
-                        className={`absolute bottom-0.5 h-1 w-1 rounded-full ${
-                          selected ? 'bg-white' : 'bg-stone-500'
+                        className={`absolute bottom-0.5 h-1.5 w-1.5 rounded-full ${
+                          dayStatus === 'complete'
+                            ? selected
+                              ? 'bg-emerald-300'
+                              : 'bg-emerald-600'
+                            : selected
+                              ? 'bg-red-300'
+                              : 'bg-red-600'
                         }`}
+                        aria-hidden
                       />
                     )}
                   </button>
@@ -148,58 +155,66 @@ export default function MentorTasksPage() {
             </p>
 
             <div className="mt-2 space-y-1">
-              {submissionGroups.length === 0 && dayTasks.length === 0 ? (
+              {dayTasks.length === 0 ? (
                 <p className="py-4 text-sm text-stone-500">No tasks for this date.</p>
               ) : (
-                submissionGroups.map((course, courseIdx) => {
-                  const courseTaskCount = course.modules.reduce(
-                    (sum, m) => sum + m.tasks.length,
-                    0
-                  )
-                  return (
-                    <CollapsibleSection
-                      key={course.courseId}
-                      title={course.courseName}
-                      count={courseTaskCount}
-                      defaultOpen={courseIdx === 0}
-                      level="course"
-                    >
-                      <div className="space-y-1">
-                        {course.modules.map((mod, modIdx) => (
-                          <CollapsibleSection
-                            key={mod.moduleTitle}
-                            title={mod.moduleTitle}
-                            count={mod.tasks.length}
-                            defaultOpen={courseIdx === 0 && modIdx === 0}
-                            level="module"
-                          >
-                            <ul className="space-y-2">
-                              {mod.tasks.map((task) => (
-                                <TaskRow key={task.id} task={task} />
-                              ))}
-                            </ul>
-                          </CollapsibleSection>
-                        ))}
-                      </div>
-                    </CollapsibleSection>
-                  )
-                })
-              )}
+                <>
+                  {submissionGroups.map((course, courseIdx) => {
+                    const courseTaskCount = course.modules.reduce(
+                      (sum, m) => sum + m.tasks.length,
+                      0
+                    )
+                    return (
+                      <CollapsibleSection
+                        key={course.courseId}
+                        title={course.courseName}
+                        count={courseTaskCount}
+                        defaultOpen={courseIdx === 0}
+                        level="course"
+                      >
+                        <div className="space-y-1">
+                          {course.modules.map((mod, modIdx) => (
+                            <CollapsibleSection
+                              key={mod.moduleTitle}
+                              title={mod.moduleTitle}
+                              count={mod.tasks.length}
+                              defaultOpen={courseIdx === 0 && modIdx === 0}
+                              level="module"
+                            >
+                              <ul className="space-y-2">
+                                {mod.tasks.map((task) => (
+                                  <TaskRow key={task.id} task={task} />
+                                ))}
+                              </ul>
+                            </CollapsibleSection>
+                          ))}
+                        </div>
+                      </CollapsibleSection>
+                    )
+                  })}
 
-              <div className="border-t border-stone-200 pt-2">
-                <CollapsibleSection
-                  title="Request review"
-                  count={pendingReviewCount}
-                  defaultOpen={reviewTasks.some((t) => t.status === 'PENDING')}
-                  level="section"
-                >
-                  <ul className="space-y-2">
-                    {reviewTasks.map((task) => (
-                      <TaskRow key={task.id} task={task} />
-                    ))}
-                  </ul>
-                </CollapsibleSection>
-              </div>
+                  {reviewTasks.length > 0 && (
+                    <div
+                      className={
+                        submissionGroups.length > 0 ? 'border-t border-stone-200 pt-2' : ''
+                      }
+                    >
+                      <CollapsibleSection
+                        title="Request review"
+                        count={reviewTasks.length}
+                        defaultOpen={pendingReviewCount > 0}
+                        level="section"
+                      >
+                        <ul className="space-y-2">
+                          {reviewTasks.map((task) => (
+                            <TaskRow key={task.id} task={task} />
+                          ))}
+                        </ul>
+                      </CollapsibleSection>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

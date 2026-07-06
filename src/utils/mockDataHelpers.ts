@@ -40,6 +40,21 @@ export function getCalendarTaskMarkers(tasks: MentorTask[]) {
   return Array.from(dates).sort()
 }
 
+/** Per-day calendar dot: green when all tasks done, red when any are still pending. */
+export function getCalendarDayStatus(tasks: MentorTask[]) {
+  const byDate = new Map<string, { pending: number }>()
+  for (const task of tasks) {
+    const entry = byDate.get(task.dueDate) ?? { pending: 0 }
+    if (task.status === 'PENDING') entry.pending++
+    byDate.set(task.dueDate, entry)
+  }
+  const result = new Map<string, 'complete' | 'pending'>()
+  byDate.forEach((v, date) => {
+    result.set(date, v.pending > 0 ? 'pending' : 'complete')
+  })
+  return result
+}
+
 export function groupTasksByCourse(tasks: MentorTask[]) {
   const map = new Map<string, { courseName: string; tasks: MentorTask[] }>()
   for (const task of tasks) {
