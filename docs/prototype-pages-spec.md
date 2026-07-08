@@ -6,17 +6,17 @@ This document describes the intended page structure, features, and user flows fo
 
 **Suggested route map (for implementation):**
 
-| # | Page | Suggested route |
-|---|------|-----------------|
-| 1 | Dashboard | `/mentor` |
-| 2 | Tasks | `/mentor/tasks` |
-| 3 | Marking | `/mentor/marking/:submissionId` |
-| 4 | Requested Review | `/mentor/review/:requestId` |
-| 5 | Learners | `/mentor/learners` |
-| 6 | Learner Profile | `/mentor/learner/:learnerId` |
-| 7 | Chatbox | `/mentor/chat` (or `/mentor/chat/:learnerId`) |
-| 8 | Notifications | `/mentor/notifications` |
-| 9 | Course Catalog | `/mentor/courses` |
+| # | Page | Route |
+|---|------|-------|
+| 1 | Dashboard | `/` |
+| 2 | Tasks | `/tasks` |
+| 3 | Marking | `/marking/:submissionId` |
+| 4 | Requested Review | `/review/:requestId` |
+| 5 | Learners | `/learners` |
+| 6 | Learner Profile | `/learners/:learnerId` |
+| 7 | Chatbox | `/chat` (or `/chat/:learnerId`) |
+| 8 | Notifications | `/notifications` |
+| 9 | Course Catalog | `/programs` |
 
 ---
 
@@ -54,7 +54,7 @@ Comparison of the Figma mockups against this spec and the current codebase.
 2. **Alerts vs Notifications:** **Merge** — no separate Alerts nav; use Notifications / Inbox only.
 3. **Marking vs Requested Review:** **Same grading component**, different entry context (task type `submission` vs `review_request`).
 4. **Chatbox:** **Header icon only**, not sidebar — phase 1 included.
-5. **Course catalog route:** Keep `/mentor/programs` internally; display label **Course Catalog**.
+5. **Course catalog route:** `/programs`; display label **Course Catalog**. Legacy `/mentor/*` paths redirect to the routes above.
 
 ### Mock data anchors (from Figma)
 
@@ -566,7 +566,7 @@ Event occurs in system (submission, request, AI alert)
 
 ### Relation to current prototype
 
-The existing **Alerts & actions** page (`/mentor/alerts`) overlaps partially. Per this spec, **Notifications** should be the unified inbox for all event types (not only actionable alerts). Confirm whether Alerts merges into Notifications or remains a separate "action queue" view.
+The legacy **Alerts & actions** page (`/alerts`) redirects to **Notifications**. Per this spec, **Notifications** is the unified inbox for all event types (not only actionable alerts).
 
 ---
 

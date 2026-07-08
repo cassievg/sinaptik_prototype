@@ -1,19 +1,20 @@
 import { useMemo, useState, useRef, useCallback, type ReactNode } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import { useLanguage } from '../context/LanguageContext'
-import BackButton from '../components/BackButton'
-import { resolveBackNavigation, useReturnNavigation } from '../utils/taskNavigation'
+import { useApp } from '../../context/AppContext'
+import { useLanguage } from '../../context/LanguageContext'
+import BackButton from '../../components/layout/BackButton'
+import { resolveBackNavigation, useReturnNavigation } from '../../utils/taskNavigation'
 import CommentBox, {
   buildMentionables,
   renderCommentText,
   type CommentEntry,
   type MentionableUser,
-} from '../components/CommentBox'
-import { getMarkingQuiz, getMcqAutoScore } from '../data/markingQuizData'
-import { getAiMarkingSuggestion } from '../data/aiMarkingSuggestions'
-import AiMarkingPanel from '../components/AiMarkingPanel'
-import type { McqQuestion, StructureQuestion } from '../types'
+} from '../../components/CommentBox'
+import { getMarkingQuiz, getMcqAutoScore } from '../../data/markingQuizData'
+import { getAiMarkingSuggestion } from '../../data/aiMarkingSuggestions'
+import AiMarkingPanel from '../../components/AiMarkingPanel'
+import PageTitleWithIcon from '../../components/PageTitleWithIcon'
+import type { McqQuestion, StructureQuestion } from '../../types'
 
 type MarkingTab = 'mcq' | 'structure'
 
@@ -480,7 +481,7 @@ export default function MarkingPage() {
     <div>
       <BackButton to={back.to} label={back.label} />
 
-      <h1 className="page-title mt-4">{t('marking.title')}</h1>
+      <PageTitleWithIcon title={t('marking.title')} icon="marking" className="mt-4" />
       <p className="page-subtitle">
         {submission.assignmentTitle} · {submission.moduleTitle}
       </p>

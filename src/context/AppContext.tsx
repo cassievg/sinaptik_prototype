@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react'
-import rawData from '../../mock_data.json'
+import rawData from '../data/mock_data.json'
 import {
   generateLearners,
   computeStatusBreakdown,

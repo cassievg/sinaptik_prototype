@@ -1,13 +1,13 @@
-import { useApp } from '../context/AppContext'
-import { useLanguage } from '../context/LanguageContext'
+import { useApp } from '../../context/AppContext'
+import { useLanguage } from '../../context/LanguageContext'
 import SidebarShell from './SidebarShell'
 import MentorHeader from './MentorHeader'
-import CourseSwitcher from './CourseSwitcher'
+import CourseSwitcher from '../CourseSwitcher'
 import {
   getUnreadNotificationCount,
   getPendingTaskCount,
   formatBadgeCount,
-} from '../utils/mockDataHelpers'
+} from '../../utils/mockDataHelpers'
 
 export default function MentorLayout() {
   const { data, notifications, tasks, selectedCourse } = useApp()

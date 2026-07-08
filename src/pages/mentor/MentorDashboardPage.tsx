@@ -1,17 +1,18 @@
 import { type ReactNode, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import { useLanguage } from '../context/LanguageContext'
+import { useApp } from '../../context/AppContext'
+import { useLanguage } from '../../context/LanguageContext'
 import {
   groupLearnersByColumn,
   getMentorLearners,
   formatRelativeTime,
-} from '../utils/dashboard'
-import { getMentorDashboardKpis, getTaskRoute } from '../utils/mockDataHelpers'
-import { useReturnNavigation } from '../utils/taskNavigation'
-import StatCard from '../components/StatCard'
-import StatusBadge from '../components/StatusBadge'
-import type { Learner, MentorTask } from '../types'
+} from '../../utils/dashboard'
+import { getMentorDashboardKpis, getTaskRoute } from '../../utils/mockDataHelpers'
+import { useReturnNavigation } from '../../utils/taskNavigation'
+import StatCard from '../../components/StatCard'
+import StatusBadge from '../../components/StatusBadge'
+import PageTitleWithIcon from '../../components/PageTitleWithIcon'
+import type { Learner, MentorTask } from '../../types'
 
 const PREVIEW_LIMIT = 5
 
@@ -33,10 +34,14 @@ export default function MentorDashboardPage() {
   const pendingWork = useMemo(() => pendingTasksSorted(tasks), [tasks])
   const workPreview = pendingWork.slice(0, PREVIEW_LIMIT)
   const followUpPreview = grouped.stuck.slice(0, PREVIEW_LIMIT)
+  const greetingKey = new Date().getHours() < 12 ? 'dashboard.greetingMorning' : 'dashboard.greetingAfternoon'
 
   return (
     <div>
-      <h1 className="page-title">{t('dashboard.greeting', { name: currentUser.name.split(' ')[0] })}</h1>
+      <PageTitleWithIcon
+        title={t(greetingKey, { name: currentUser.name.split(' ')[0] })}
+        icon="dashboard"
+      />
       <p className="page-subtitle">{cohort.name}</p>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3">

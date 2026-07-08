@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import { useLanguage } from '../context/LanguageContext'
-import BackButton from '../components/BackButton'
-import LearnerProfileDetail from '../components/LearnerProfileDetail'
-import { resolveBackNavigation, useReturnNavigation } from '../utils/taskNavigation'
+import { useApp } from '../../context/AppContext'
+import { useLanguage } from '../../context/LanguageContext'
+import BackButton from '../../components/layout/BackButton'
+import LearnerProfileDetail from '../../components/LearnerProfileDetail'
+import { resolveBackNavigation, useReturnNavigation } from '../../utils/taskNavigation'
 
 function MessageIcon() {
   return (

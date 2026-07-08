@@ -1,10 +1,10 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import { useLanguage } from '../context/LanguageContext'
-import { useSidebar } from '../context/SidebarContext'
-import { formatBadgeCount, getUnreadChatCount } from '../utils/mockDataHelpers'
-import NotificationBell from './NotificationBell'
-import LanguageSwitcher from './LanguageSwitcher'
+import { useApp } from '../../context/AppContext'
+import { useLanguage } from '../../context/LanguageContext'
+import { useSidebar } from '../../context/SidebarContext'
+import { formatBadgeCount, getUnreadChatCount } from '../../utils/mockDataHelpers'
+import NotificationBell from '../NotificationBell'
+import LanguageSwitcher from '../LanguageSwitcher'
 
 function IconBadge({ label }: { label: string }) {
   return (
@@ -23,7 +23,7 @@ export default function MentorHeader() {
   const chatBadge = formatBadgeCount(getUnreadChatCount(conversations))
 
   return (
-    <header className="flex items-center gap-3 border-b border-stone-300 bg-paper px-6 py-3 md:gap-4 md:px-10">
+    <header className="hidden items-center gap-3 border-b border-stone-300 bg-paper px-6 py-3 md:flex md:gap-4 md:px-10">
       <button
         type="button"
         onClick={toggle}

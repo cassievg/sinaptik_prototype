@@ -17,6 +17,8 @@ const en = {
     openMenu: 'Open navigation',
     closeMenu: 'Close navigation',
   },
+  header: {
+    chat: 'Chat',
     openChat: 'Open chat',
     openChatUnread: 'Open chat, {count} unread',
     notifications: 'Notifications',
@@ -66,7 +68,8 @@ const en = {
     daysAgo: '{n}d ago',
   },
   dashboard: {
-    greeting: 'Good morning, {name}',
+    greetingMorning: 'Good morning, {name}',
+    greetingAfternoon: 'Good afternoon, {name}',
     yourLearners: 'Your learners',
     cohortCompletion: 'Cohort completion',
     averageScore: 'Average score',
@@ -302,7 +305,8 @@ const id = {
     daysAgo: '{n} hari lalu',
   },
   dashboard: {
-    greeting: 'Selamat pagi, {name}',
+    greetingMorning: 'Selamat pagi, {name}',
+    greetingAfternoon: 'Selamat siang, {name}',
     yourLearners: 'Peserta Anda',
     cohortCompletion: 'Penyelesaian kohort',
     averageScore: 'Skor rata-rata',

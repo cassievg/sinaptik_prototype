@@ -1,27 +1,27 @@
 # Sinaptik Mentor Portal — Database Schema & FE Contract
 
-Tài liệu định nghĩa **bảng database** BE cần tạo để nối với FE prototype, kèm **mentor workflow** và map API.
+This document defines the **database tables** the backend must implement to connect with the FE prototype, along with the **mentor workflow** and API mapping.
 
 ---
 
 ## 1. Mentor daily workflow (FE flow)
 
 ```
-Sáng
-  Dashboard → board (ai stuck / cần review?)
-           → Tasks → chấm bài PENDING
-           → Notifications → xử lý AI alert
+Morning
+  Dashboard → board (who is stuck / needs review?)
+           → Tasks → grade PENDING submissions
+           → Notifications → handle AI alerts
 
-Trong ngày
-  Marking → lưu structure score + comments
+During the day
+  Marking → save structure scores + comments
          → auto: task COMPLETED + learner ON_TRACK
 
-Học sinh escalate
+Learner escalates
   Notification → Requested Review
-              → xem prior mentor feedback (từ submission)
-              → lưu review_response
+              → view prior mentor feedback (from submission)
+              → save review_response
 
-Theo dõi
+Follow-up
   Learners (?status=PENDING_MENTOR) → Profile → Chat
 ```
 
@@ -77,7 +77,7 @@ erDiagram
 
 ---
 
-## 4. Bảng database chi tiết
+## 4. Database tables (detail)
 
 ### 4.1 `users`
 
@@ -142,13 +142,13 @@ erDiagram
 | `avg_response_time_hours` | DECIMAL(6,2) | nullable | Ops metric |
 | `active_this_week` | INT | nullable | Ops metric |
 
-> `at_risk_count`, `pending_review_count` — **derive** từ `learners`, không cần cột riêng.
+> `at_risk_count`, `pending_review_count` — **derive** from `learners`; no separate columns needed.
 
 ---
 
 ### 4.6 `cohort_mentors`
 
-Mentor phụ trách cohort / course (Puja có 21/186 learners).
+Mentors assigned to a cohort / course (e.g. Puja has 21/186 learners).
 
 | Column | Type | Constraints | Notes |
 |--------|------|-------------|-------|
@@ -220,7 +220,7 @@ Mentor phụ trách cohort / course (Puja có 21/186 learners).
 | `module_title` | VARCHAR(255) | NOT NULL | |
 | `assignment_title` | VARCHAR(255) | NOT NULL | |
 | `content` | TEXT | NOT NULL | Code / essay |
-| `ai_score` | DECIMAL(5,2) | | Lưu DB, **không show** Marking UI |
+| `ai_score` | DECIMAL(5,2) | | Stored in DB, **not shown** on Marking UI |
 | `ai_feedback` | TEXT | | Analytics only |
 | `submitted_at` | TIMESTAMPTZ | NOT NULL | |
 | `mentor_score` | DECIMAL(5,2) | nullable | Structure total |
@@ -393,7 +393,7 @@ Timeline on Learner Profile.
 
 ## 5. Dashboard data (read-only aggregates)
 
-FE Dashboard **không cần 4 chart**. BE trả `GET /mentor/dashboard`:
+FE Dashboard **does not need 4 charts**. BE returns `GET /mentor/dashboard`:
 
 ```json
 {
@@ -422,7 +422,7 @@ FE Dashboard **không cần 4 chart**. BE trả `GET /mentor/dashboard`:
 | `stuckOrAtRisk` | `learners` WHERE status IN (STUCK, AT_RISK) |
 | Board columns | Group `learners` by status mapping above |
 
-> Charts (`weekly_engagement`, `score_distribution`, `module_completion`, `skill_averages`) — **phase 2 / admin analytics**, không block mentor workflow.
+> Charts (`weekly_engagement`, `score_distribution`, `module_completion`, `skill_averages`) — **phase 2 / admin analytics**; not required for the mentor workflow.
 
 ---
 
@@ -430,15 +430,15 @@ FE Dashboard **không cần 4 chart**. BE trả `GET /mentor/dashboard`:
 
 | FE Route | GET | POST / PATCH |
 |----------|-----|--------------|
-| `/mentor` | `GET /mentor/dashboard` | — |
-| `/mentor/tasks` | `GET /mentor/tasks?mentor_id=` | `PATCH /mentor/tasks/:id` |
-| `/mentor/marking/:id` | `GET /submissions/:id`, `GET /marking-quizzes/:submissionId` | `POST /submissions/:id/mentor-grading` |
-| `/mentor/review/:id` | `GET /review-requests/:id`, `GET /submissions/:submissionId` | `POST /review-requests/:id/resolve` |
-| `/mentor/notifications` | `GET /notifications?mentor_id=` | `PATCH /notifications/:id/read` |
-| `/mentor/learners` | `GET /learners?mentor_id=&status=` | — |
-| `/mentor/learner/:id` | `GET /learners/:id`, `GET /activity-logs?learner_id=` | `PATCH /learners/:id/status` |
-| `/mentor/chat/:learnerId` | `GET /conversations`, `GET /messages` | `POST /conversations/:id/messages` |
-| `/mentor/programs` | `GET /programs`, `GET /fields` | — |
+| `/` | `GET /mentor/dashboard` | — |
+| `/tasks` | `GET /mentor/tasks?mentor_id=` | `PATCH /mentor/tasks/:id` |
+| `/marking/:id` | `GET /submissions/:id`, `GET /marking-quizzes/:submissionId` | `POST /submissions/:id/mentor-grading` |
+| `/review/:id` | `GET /review-requests/:id`, `GET /submissions/:submissionId` | `POST /review-requests/:id/resolve` |
+| `/notifications` | `GET /notifications?mentor_id=` | `PATCH /notifications/:id/read` |
+| `/learners` | `GET /learners?mentor_id=&status=` | — |
+| `/learners/:id` | `GET /learners/:id`, `GET /activity-logs?learner_id=` | `PATCH /learners/:id/status` |
+| `/chat/:learnerId` | `GET /conversations`, `GET /messages` | `POST /conversations/:id/messages` |
+| `/programs` | `GET /programs`, `GET /fields` | — |
 
 ---
 
@@ -520,7 +520,7 @@ sequenceDiagram
 
 ---
 
-## 9. Indexes đề xuất
+## 9. Recommended indexes
 
 ```sql
 CREATE INDEX idx_learners_mentor_status ON learners(assigned_mentor_id, status);
@@ -537,11 +537,11 @@ CREATE INDEX idx_review_requests_status ON review_requests(status, created_at DE
 | File | Role |
 |------|------|
 | `src/types/index.ts` | TypeScript interfaces |
-| `mock_data.json` | Sample payloads |
+| `src/data/mock_data.json` | Sample payloads |
 | `src/context/AppContext.tsx` | Client-side mutations mirroring API |
-| `src/pages/MentorDashboardPage.tsx` | Triage board + action cards |
-| `src/pages/MentorTasksPage.tsx` | Work queue |
-| `src/pages/MarkingPage.tsx` | Grading |
-| `src/pages/RequestedReviewPage.tsx` | Escalation reply |
-| `src/pages/MentorNotificationsPage.tsx` | Inbox |
-| `src/pages/MentorLearnersPage.tsx` | Roster + status filter |
+| `src/pages/mentor/MentorDashboardPage.tsx` | Triage board + action cards |
+| `src/pages/mentor/MentorTasksPage.tsx` | Work queue |
+| `src/pages/mentor/MarkingPage.tsx` | Grading |
+| `src/pages/mentor/RequestedReviewPage.tsx` | Escalation reply |
+| `src/pages/mentor/MentorNotificationsPage.tsx` | Inbox |
+| `src/pages/mentor/MentorLearnersPage.tsx` | Roster + status filter |
