@@ -28,6 +28,12 @@ interface AppState extends Omit<AppData, 'learners' | 'dashboardAnalytics'> {
   escalationReason: string
 }
 
+export interface MentorCourse {
+  id: string
+  name: string
+  cohortName: string
+}
+
 interface AppContextValue {
   data: AppState
   mentors: typeof mentors
@@ -39,6 +45,10 @@ interface AppContextValue {
   conversations: ChatConversation[]
   reviewRequests: ReviewRequest[]
   testResults: Record<string, number>
+  mentorCourses: MentorCourse[]
+  selectedCourseId: string
+  selectedCourse: MentorCourse
+  setSelectedCourseId: (courseId: string) => void
   markNotificationRead: (notificationId: string) => void
   markConversationRead: (learnerId: string) => void
   toggleTaskStatus: (taskId: string) => void
@@ -89,6 +99,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [conversations, setConversations] = useState<ChatConversation[]>(
     rawData.conversations as ChatConversation[]
   )
+
+  const mentorCourses = useMemo<MentorCourse[]>(() => {
+    const ids = (rawData.mentorCourseIds as string[]) ?? [rawData.cohort.programId]
+    return ids
+      .map((id) => programs.find((p) => p.id === id))
+      .filter((p): p is (typeof programs)[number] => Boolean(p))
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        cohortName: p.activeCohortName ?? p.name,
+      }))
+  }, [])
+
+  const [selectedCourseId, setSelectedCourseId] = useState<string>(rawData.cohort.programId)
+  const selectedCourse =
+    mentorCourses.find((c) => c.id === selectedCourseId) ?? mentorCourses[0]
 
   const dashboardAnalytics = useMemo(
     (): DashboardAnalytics => ({
@@ -275,6 +301,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         conversations,
         reviewRequests,
         testResults,
+        mentorCourses,
+        selectedCourseId,
+        selectedCourse,
+        setSelectedCourseId,
         saveTestResult,
         markNotificationRead,
         markConversationRead,

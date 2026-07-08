@@ -8,30 +8,44 @@ export interface SidebarNavItem {
 }
 
 interface SidebarShellProps {
-  title: string
+  title?: string
+  logoSrc?: string
+  logoAlt?: string
   subtitle: string
   navItems: SidebarNavItem[]
   user: { name: string; avatar: string; role: string }
   header?: React.ReactNode
   footer?: React.ReactNode
+  belowTitle?: React.ReactNode
 }
 
 export default function SidebarShell({
-  title,
+  title = 'Sinaptik',
+  logoSrc,
+  logoAlt,
   subtitle,
   navItems,
   user,
   header,
   footer,
+  belowTitle,
 }: SidebarShellProps) {
   return (
     <div className="flex min-h-screen bg-paper">
       <aside className="flex w-56 shrink-0 flex-col border-r border-stone-300 bg-stone-100 md:w-60">
         <div className="border-b border-stone-300 px-5 py-6">
-          <h1 className="font-serif text-lg font-semibold tracking-tight text-stone-900">
-            {title}
-          </h1>
-          <p className="mt-0.5 text-xs text-stone-600">{subtitle}</p>
+          {logoSrc ? (
+            <img
+              src={logoSrc}
+              alt={logoAlt ?? title}
+              className="h-8 w-auto max-w-full object-contain object-left mix-blend-multiply"
+            />
+          ) : (
+            <h1 className="font-serif text-lg font-semibold tracking-tight text-stone-900">
+              {title}
+            </h1>
+          )}
+          {belowTitle ?? <p className="mt-0.5 text-xs text-stone-600">{subtitle}</p>}
         </div>
 
         <nav className="flex-1 px-3 py-4">

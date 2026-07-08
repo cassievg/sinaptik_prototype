@@ -1,30 +1,17 @@
 import { useApp } from '../context/AppContext'
-
 import SidebarShell from './SidebarShell'
-
 import MentorHeader from './MentorHeader'
-
+import CourseSwitcher from './CourseSwitcher'
 import {
-
   getUnreadNotificationCount,
-
   getPendingTaskCount,
-
   formatBadgeCount,
-
 } from '../utils/mockDataHelpers'
 
-
-
 export default function MentorLayout() {
-
-  const { data, notifications, tasks } = useApp()
-
+  const { data, notifications, tasks, selectedCourse } = useApp()
   const unreadNotifications = getUnreadNotificationCount(notifications)
-
   const pendingTasks = getPendingTaskCount(tasks)
-
-
 
   const navItems = [
     { to: '/', label: 'Dashboard', end: true },
@@ -38,33 +25,19 @@ export default function MentorLayout() {
     { to: '/programs', label: 'Course catalog' },
   ]
 
-
-
   return (
-
     <SidebarShell
-
-      title="Sinaptik"
-
+      logoSrc="/sinaptik-logo.png"
+      logoAlt="Sinaptik"
       subtitle="Mentor portal"
-
+      belowTitle={<CourseSwitcher />}
       navItems={navItems}
-
       header={<MentorHeader />}
-
       user={{
-
         name: data.currentUser.name,
-
         avatar: data.currentUser.avatar,
-
-        role: `Mentor · ${data.cohort.name}`,
-
+        role: `Mentor · ${selectedCourse?.cohortName ?? data.cohort.name}`,
       }}
-
     />
-
   )
-
 }
-
