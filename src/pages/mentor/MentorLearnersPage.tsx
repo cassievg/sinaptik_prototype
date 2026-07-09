@@ -6,6 +6,7 @@ import PageTitleWithIcon from '../../components/PageTitleWithIcon'
 import StatusBadge from '../../components/StatusBadge'
 import { getMentorLearners, formatRelativeTime } from '../../utils/dashboard'
 import { searchLearners } from '../../utils/mockDataHelpers'
+import { useReturnNavigation } from '../../utils/taskNavigation'
 import type { Learner } from '../../types'
 
 const PAGE_SIZE = 10
@@ -75,11 +76,37 @@ export default function MentorLearnersPage() {
   const { data } = useApp()
   const { t } = useLanguage()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { learnersReturn } = useReturnNavigation()
   const myLearners = getMentorLearners(data.learners, data.currentUser.id)
-  const [page, setPage] = useState(0)
   const [query, setQuery] = useState('')
   const [group, setGroup] = useState<LearnerGroup>('ALL')
+
+  const page = Math.max(0, (parseInt(searchParams.get('page') ?? '1', 10) || 1) - 1)
+
+  const setPage = (next: number | ((current: number) => number)) => {
+    const newPage = typeof next === 'function' ? next(page) : next
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev)
+        if (newPage <= 0) params.delete('page')
+        else params.set('page', String(newPage + 1))
+        return params
+      },
+      { replace: true }
+    )
+  }
+
+  const resetPage = () => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev)
+        params.delete('page')
+        return params
+      },
+      { replace: true }
+    )
+  }
 
   useEffect(() => {
     const fromUrl = groupFromSearchParams(searchParams)
@@ -94,6 +121,12 @@ export default function MentorLearnersPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const visible = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   const groupSubtitleKey = GROUP_SUBTITLE_KEY[group]
+
+  useEffect(() => {
+    if (page > 0 && page >= totalPages) {
+      setPage(totalPages - 1)
+    }
+  }, [page, totalPages])
 
   return (
     <div>
@@ -113,7 +146,7 @@ export default function MentorLearnersPage() {
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
-            setPage(0)
+            resetPage()
           }}
           placeholder={t('learners.search')}
           className="min-w-[200px] flex-1 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
@@ -127,7 +160,7 @@ export default function MentorLearnersPage() {
             value={group}
             onChange={(e) => {
               setGroup(e.target.value as LearnerGroup)
-              setPage(0)
+              resetPage()
             }}
             className="filter-select min-w-[220px]"
           >
@@ -165,7 +198,11 @@ export default function MentorLearnersPage() {
                 <tr
                   key={learner.id}
                   className="cursor-pointer hover:bg-stone-50"
-                  onClick={() => navigate(`/learners/${learner.id}`)}
+                  onClick={() =>
+                    navigate(`/learners/${learner.id}`, {
+                      state: learnersReturn(page + 1),
+                    })
+                  }
                 >
                   <td className="px-4 py-3 font-medium text-stone-900">{learner.name}</td>
                   <td className="px-4 py-3 text-stone-600">{learner.currentModule}</td>

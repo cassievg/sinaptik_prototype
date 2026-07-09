@@ -9,12 +9,27 @@ export function tasksPathWithDate(date?: string): string {
   return date ? `/tasks?date=${date}` : '/tasks'
 }
 
+export function learnersPathWithPage(page?: number): string {
+  if (!page || page <= 1) return '/learners'
+  return `/learners?page=${page}`
+}
+
 export function buildTasksReturn(
   label: string,
   date?: string
 ): ReturnNavigationState {
   return {
     returnTo: tasksPathWithDate(date),
+    returnLabel: label,
+  }
+}
+
+export function buildLearnersReturn(
+  label: string,
+  page?: number
+): ReturnNavigationState {
+  return {
+    returnTo: learnersPathWithPage(page),
     returnLabel: label,
   }
 }
@@ -36,6 +51,7 @@ export function useReturnNavigation() {
   return {
     tasksReturn: buildTasksReturn(t('back.tasks')),
     tasksReturnForDate: (date: string) => buildTasksReturn(t('back.tasks'), date),
+    learnersReturn: (page?: number) => buildLearnersReturn(t('back.learners'), page),
     dashboardReturn: {
       returnTo: '/',
       returnLabel: t('back.dashboard'),
